@@ -49,6 +49,62 @@ app.post('/convert', (req, res) => {
   })
 })
 
+let counter = 0;
+// Handle GET req for polling
+app.get('/poll', (req, res) => {
+  counter++;
+  const data = { value: counter };
+  res.json(data);
+});
+
+let currentTemp = 20;
+// Handle GET req for weather
+app.get('/get-temp', (req, res) => {
+  currentTemp += Math.random() * 2 - 1;
+  res.send(currentTemp.toFixed(1) + 'C');
+})
+
+const contacts = [
+  { name: 'Avid', email: 'avid@gmail.com' },
+  { name: 'Vesha', email: 'vesha@gmail.com' },
+  { name: 'Daiva', email: 'daiva@gmail.com' },
+  { name: 'Dianta', email: 'dianta@gmail.com' }
+];
+
+// Handle POST req for Contact Search
+app.post('/search', (req, res) => {
+
+  const searchTerm = req.body.search.toLowerCase();
+
+  if (!searchTerm) {
+    return res.send('<tr></tr>');
+  }
+
+  const searchResults = contacts.filter((contact) => {
+    const name = contact.name.toLowerCase();
+    const email = contact.email.toLowerCase();
+
+    return name.includes(searchTerm) || email.includes(searchTerm);
+  });
+
+  setTimeout(() => {
+    const searchResultsHtml = searchResults.map((contact) => `
+    <tr>
+      <td>
+        <div class="my-4 p-2"> ${contact.name} </div>
+      </td>
+      <td>
+        <div class="my-4 p-2"> ${contact.email} </div>
+      </td>
+    </tr>
+    `).join('');
+
+    res.send(searchResultsHtml);
+
+  }, 1000);
+
+});
+
 //Start the server
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");
