@@ -105,6 +105,43 @@ app.post('/search', (req, res) => {
 
 });
 
+// Handle POST req for Contact Search frpm jsonapiplaceholder
+app.post('/search/api', async(req, res) => {
+
+  const searchTerm = req.body.search.toLowerCase();
+
+  if (!searchTerm) {
+    return res.send('<tr></tr>');
+  }
+
+  const response = await fetch(`http://jsonplaceholder.typicode.com/users`);
+  const contacts = await response.json();
+
+  const searchResults = contacts.filter((contact) => {
+    const name = contact.name.toLowerCase();
+    const email = contact.email.toLowerCase();
+
+    return name.includes(searchTerm) || email.includes(searchTerm);
+  });
+
+  setTimeout(() => {
+    const searchResultsHtml = searchResults.map((contact) => `
+    <tr>
+      <td>
+        <div class="my-4 p-2"> ${contact.name} </div>
+      </td>
+      <td>
+        <div class="my-4 p-2"> ${contact.email} </div>
+      </td>
+    </tr>
+    `).join('');
+
+    res.send(searchResultsHtml);
+
+  }, 1000);
+
+});
+
 //Start the server
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");
